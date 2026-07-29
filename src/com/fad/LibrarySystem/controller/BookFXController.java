@@ -11,11 +11,21 @@ package com.fad.LibrarySystem.controller;
 
 import com.fad.LibrarySystem.model.Book;
 import com.fad.LibrarySystem.model.LibraryService;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 /**
@@ -158,7 +168,7 @@ public class BookFXController {
     @FXML
     private void handleAddBook() {
         // Create a blank dialog with a custom title
-        Dialog<Book> dialog = new Dialog<>();
+        Dialog<Void> dialog = new Dialog<>();
         dialog.setTitle("Add Book");
 
         // Define the buttons that appear at the bottom of the dialog
@@ -183,23 +193,30 @@ public class BookFXController {
         // It runs when the user clicks any button — btn is whichever was clicked.
         // If Cancel was clicked, return null (do nothing).
         // If Add was clicked, validate and call service.addBook().
-        dialog.setResultConverter(btn -> {
-            if (btn != addBtn) return null;
-            String id     = tfId.getText().trim();
-            String title  = tfTitle.getText().trim();
-            String author = tfAuthor.getText().trim();
-            String genre  = tfGenre.getText().trim();
-            if (id.isEmpty() || title.isEmpty() || author.isEmpty()) return null;
-            return service.addBook(id, title, genre.isEmpty() ? "General" : genre, author);
-        });
+        Node addButtonNode = dialog.getDialogPane().lookupButton(addBtn);
+        addButtonNode.addEventFilter(ActionEvent.ACTION, event -> {
+        String id     = tfId.getText().trim();
+        String title  = tfTitle.getText().trim();
+        String author = tfAuthor.getText().trim();
 
+        if (id.isEmpty() || title.isEmpty() || author.isEmpty()) {
+            showAlert("Book ID, Title, dan Author wajib diisi.");
+            event.consume();
+            return;
+        }
+
+        String genre = tfGenre.getText().trim();
+        Book added = service.addBook(id, title, author, genre.isEmpty() ? "General" : genre);
+        if (added == null) {
+            showAlert("Gagal menambah buku. Kemungkinan ID sudah dipakai.");
+            event.consume();
+        }
+         });
         // showAndWait blocks until the dialog is closed, then runs the lambda
         // with whatever setResultConverter returned. A null result means the
         // operation failed or was cancelled — show a warning in that case.
-        dialog.showAndWait().ifPresent(book -> {
-            if (book == null) showAlert("Could not add book. ID may be duplicate or required fields are empty.");
-            else loadBooks();
-        });
+        dialog.showAndWait();
+        loadBooks(); // aman dipanggil walau tidak ada perubahan, tabel hanya di-refresh ulang
     }
 
     // ── handleDeleteBook() ────────────────────────────────────────────────────

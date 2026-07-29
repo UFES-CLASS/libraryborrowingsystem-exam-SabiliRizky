@@ -9,9 +9,10 @@
  */
 package com.fad.LibrarySystem.controller;
 
+import java.util.Scanner;
+
 import com.fad.LibrarySystem.model.LibraryService;
 import com.fad.LibrarySystem.view.MenuView;
-import java.util.Scanner;
 
 /**
  * Top-level console controller — the entry point for the console application loop.
@@ -61,7 +62,7 @@ public class LibraryController {
                 case 1  -> menuView.showMessage("Books — use the JavaFX GUI (run App.java).");
                 case 2  -> menuView.showMessage("Members — use the JavaFX GUI (run App.java).");
                 case 3  -> borrowController.handleMenu();
-                case 4  -> borrowController.handleMenu();
+                case 4  -> menuView.showMessage("Reservations — coming soon.");
                 case 5  -> menuView.showMessage("Fines — coming soon.");
                 case 0  -> menuView.showMessage("Goodbye!");
                 default -> menuView.showError("Invalid option. Try again.");
