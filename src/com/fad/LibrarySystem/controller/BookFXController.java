@@ -200,7 +200,7 @@ public class BookFXController {
         String author = tfAuthor.getText().trim();
 
         if (id.isEmpty() || title.isEmpty() || author.isEmpty()) {
-            showAlert("Book ID, Title, dan Author wajib diisi.");
+            showAlert("Book ID, Title, and Author are required fields.");
             event.consume();
             return;
         }
@@ -208,7 +208,7 @@ public class BookFXController {
         String genre = tfGenre.getText().trim();
         Book added = service.addBook(id, title, author, genre.isEmpty() ? "General" : genre);
         if (added == null) {
-            showAlert("Gagal menambah buku. Kemungkinan ID sudah dipakai.");
+            showAlert("Failed to add a book. The ID may already be in use.");
             event.consume();
         }
          });
